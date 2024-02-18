@@ -10,13 +10,13 @@
 #include <p18f45k20.h>
 #include <delays.h>
 
-#define LCD_RST LATDbits.LATD7 //5110宏定义
+#define LCD_RST LATDbits.LATD7 //5110 macro definition
 #define LCD_SCE LATDbits.LATD6
 #define LCD_DC LATDbits.LATD5
 #define LCD_SDIN LATDbits.LATD4
 #define LCD_SCLK LATDbits.LATD3
 
-//字库
+    //font
 unsigned char font6x8[][6] =
     {
         {0x00, 0x3E, 0x51, 0x49, 0x45, 0x3E}, // 0
@@ -37,7 +37,7 @@ unsigned char font6x8[][6] =
         {0x00, 0x1C, 0x20, 0x40, 0x20, 0x1C}  // v 15
 };
 
-//延时函数
+//delay function
 void delay_nms(unsigned int n)
 {
     do
@@ -46,7 +46,7 @@ void delay_nms(unsigned int n)
     } while (--n);
 }
 
-//AD初始化
+//AD initialization
 void init_ad()
 {
     ADCON1 = 0X0C;
@@ -55,7 +55,7 @@ void init_ad()
     ADCON0bits.CHS0 = 0;
 }
 
-//AD获取返回值
+//AD gets return value
 unsigned int get_result()
 {
     unsigned int dat = 0;
@@ -69,7 +69,7 @@ unsigned int get_result()
     return dat;
 }
 
-//5110时许
+//5110 hours
 void LCD_write_byte(unsigned char dt, unsigned char command)
 {
     unsigned char i;
@@ -90,7 +90,7 @@ void LCD_write_byte(unsigned char dt, unsigned char command)
     LCD_SDIN = 1;
 }
 
-//LCD清屏函数
+//LCD screen clear function
 void LCD_clear(void)
 {
     unsigned int i;
@@ -102,29 +102,29 @@ void LCD_clear(void)
         LCD_write_byte(0, 1);
 }
 
-//LCD初始化
+//LCD initialization
 void LCD_init(void)
 {
     LCD_RST = 0;
     delay_nms(10);
     LCD_RST = 1;
-    LCD_write_byte(0x21, 0); // 初始化Lcd,功能设定使用扩充指令
-    LCD_write_byte(0xc8, 0); // 设置偏置电压
-    LCD_write_byte(0x06, 0); // 温度校正
+    LCD_write_byte(0x21, 0); // Initialize LCD, use extended instructions for function setting
+    LCD_write_byte(0xc8, 0); // Set bias voltage
+    LCD_write_byte(0x06, 0); // temperature correction
     LCD_write_byte(0x13, 0); // 1:48
-    LCD_write_byte(0x20, 0); // 使用基本命令
-    LCD_clear();             // 清屏
-    LCD_write_byte(0x0c, 0); // 设定显示模式，正常显示
+    LCD_write_byte(0x20, 0); // Use basic commands
+    LCD_clear();             // clear screen
+    LCD_write_byte(0x0c, 0); // Set display mode, normal display
 }
 
-//光标位置XY
+//Cursor positionXY
 void LCD_set_XY(unsigned char X, unsigned char Y)
 {
     LCD_write_byte(0x40 | Y, 0); // column
     LCD_write_byte(0x80 | X, 0); // row
 }
 
-//LCD显示字库
+//LCD display font library
 void LCD_write_char(unsigned char c)
 {
     unsigned char line;
@@ -152,9 +152,9 @@ int main(int argc, char **argv)
     while (1)
     {
         adc_result = get_result();
-        V_value = adc_result * 50 / 1024; //AD获取电压
+        V_value = adc_result * 50 / 1024; //AD gets voltage
 
-        //显示字库 绘制曲线
+        //Show font library Draw curve
         LCD_set_XY(0, 5);
         LCD_write_char(12);
         LCD_write_char(14);
